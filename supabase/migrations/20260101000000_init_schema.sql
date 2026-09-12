@@ -180,9 +180,16 @@ create table public.odds_snapshots (
   price numeric not null check (price > 1),
   point numeric,
   fetched_at timestamptz not null default now(),
-  fetched_at_minute timestamptz generated always as (date_trunc('minute', fetched_at)) stored,
-  created_at timestamptz not null default now(),
-  unique (match_id, bookmaker, market, outcome, fetched_at_minute)
+  created_at timestamptz not null default now()
+);
+-- Dedupe key as a plain expression index rather than a GENERATED column:
+-- date_trunc('minute', timestamptz) is only STABLE (depends on session
+-- TimeZone), not IMMUTABLE, so Postgres refuses it in a generated column
+-- (42P17) but allows it in an index. Normalizing through 'utc' first makes
+-- the truncation itself deterministic regardless of session timezone.
+create unique index odds_snapshots_dedupe_idx on public.odds_snapshots (
+  match_id, bookmaker, market, outcome,
+  (date_trunc('minute', fetched_at at time zone 'utc'))
 );
 create index odds_snapshots_match_fetched_idx on public.odds_snapshots (match_id, fetched_at);
 
