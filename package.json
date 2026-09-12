@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "supabase:push": "supabase db push",
-    "supabase:types": "supabase gen types typescript --local > lib/supabase/types.ts"
+    "supabase:types": "supabase gen types typescript --local > lib/supabase/types.ts",
+    "verify:engine": "tsx scripts/verify-engine.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -40,8 +41,14 @@
     "eslint-config-next": "16.3.5",
     "supabase": "^2.117.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5",
     "vitest": "^5.0.0"
   },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
 }

@@ -26,9 +26,12 @@ supabase/migrations/   init_schema → rls → functions
 - **`subscriptions`, `stripe_events`, `predictions`, `backtests`** — RLS מופעל וללא policy כלל ללקוח (חסימה מוחלטת חוץ מ-service-role). ראו `supabase/migrations/20260101000100_rls.sql`.
 - **`lib/supabase/admin.ts`** מסומן `server-only` — ניסיון import מקומפוננטת client הוא שגיאת build.
 
-## מצב נוכחי (אחרי Batch 1)
-בוצע: Architecture, Design System (Tailwind/shadcn RTL), Database (schema+RLS+triggers), Auth (login/signup/forgot-password/reset-password/account, session gating דרך proxy.ts).
-עדיין TODO (Batches הבאים): Data Providers, Prediction Engine, Scanner, Hidden Opportunities, Market Blind Spots, Model Performance, Stripe, Admin CRUD מלא, Analytics מחובר לספק חיצוני, בדיקות מקיפות.
+## מצב נוכחי (אחרי Batch 2)
+בוצע:
+- **Batch 1**: Architecture, Design System (Tailwind/shadcn RTL), Database (schema+RLS+triggers), Auth (login/signup/forgot-password/reset-password/account, session gating דרך proxy.ts). מיושם ונבדק חי מול פרויקט Supabase אמיתי.
+- **Batch 2**: Data Providers (`lib/providers/`: The Odds API + free scores provider מבוסס 365scores, עם retry+cache+fallback chain — נבדק מול תגובה חיה אמיתית), Prediction Engine מלא (`lib/prediction-engine/`: de-vig Shin/power/proportional, Poisson/Dixon-Coles, Elo, כיווץ בייסיאני, אנסמבל, כיול Brier/LogLoss/ECE/Platt/Beta, Wilson CI, Opportunity/Confidence Score, backtest harness עם purge/embargo ו-FDR) — **139 unit tests עוברים**, `lib/prediction-engine/index.ts` הוא ה-facade היחיד שקורא ל-DB (דרך repos מוזרקים, טרם מחובר). עמוד `/match/[id]` בנוי מול הסכימה האמיתית (Free/Pro gating עובד, `predictions_public` vs `predictions` מלא). `pnpm verify:engine` מריץ את המנוע המלא קצה-לקצה (fixture או Odds API חי) ומדפיס תוצאות הגיוניות.
+
+עדיין TODO (Batches הבאים): חיבור מנוע הניבוי ל-cron jobs אמיתיים (`lib/jobs/*`, Batch 3), Scanner, Hidden Opportunities, Market Blind Spots, Model Performance, Stripe, Admin CRUD מלא, Analytics מחובר לספק חיצוני.
 
 ## הרחבה לענף ספורט נוסף
 1. הוסף שורה ל-`sports` (מיגרציה חדשה) ול-league pool ב-`supabase/seed.sql`.
