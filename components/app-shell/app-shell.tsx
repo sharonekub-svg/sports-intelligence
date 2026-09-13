@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, LogOut, Crown } from "lucide-react";
@@ -26,7 +26,7 @@ function NavLinks({ pathname, isPro, onNavigate }: { pathname: string; isPro: bo
             href={item.href}
             onClick={onNavigate}
             className={cn(
-              "group relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+              "group relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
               active
                 ? "bg-sidebar-accent text-sidebar-accent-foreground"
                 : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
@@ -76,7 +76,7 @@ function UserFooter({ userEmail, isPro }: { userEmail: string | null; isPro: boo
       <button
         onClick={handleSignOut}
         aria-label="התנתק"
-        className="flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/50 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+        className="flex size-7 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/50 transition-colors outline-none hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring"
       >
         <LogOut className="size-4" strokeWidth={1.75} />
       </button>
@@ -87,6 +87,15 @@ function UserFooter({ userEmail, isPro }: { userEmail: string | null; isPro: boo
 export default function AppShell({ userEmail, isPro, children }: AppShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setMobileOpen(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen]);
 
   return (
     <div className="flex min-h-screen">
@@ -111,7 +120,7 @@ export default function AppShell({ userEmail, isPro, children }: AppShellProps) 
         <button
           onClick={() => setMobileOpen(true)}
           aria-label="פתח תפריט"
-          className="flex size-9 items-center justify-center rounded-md text-sidebar-foreground hover:bg-sidebar-accent"
+          className="flex size-9 items-center justify-center rounded-md text-sidebar-foreground outline-none hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-sidebar-ring"
         >
           <Menu className="size-5" strokeWidth={1.75} />
         </button>
@@ -125,13 +134,18 @@ export default function AppShell({ userEmail, isPro, children }: AppShellProps) 
             className="absolute inset-0 bg-black/60"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute inset-y-0 end-0 flex w-72 flex-col bg-sidebar shadow-xl">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="תפריט ניווט"
+            className="absolute inset-y-0 end-0 flex w-72 flex-col bg-sidebar shadow-xl"
+          >
             <div className="flex items-center justify-between px-4 py-4">
               <span className="text-sm font-semibold text-sidebar-foreground">Sports Intelligence</span>
               <button
                 onClick={() => setMobileOpen(false)}
                 aria-label="סגור תפריט"
-                className="flex size-8 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent"
+                className="flex size-8 items-center justify-center rounded-md text-sidebar-foreground/70 outline-none hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-sidebar-ring"
               >
                 <X className="size-4" strokeWidth={1.75} />
               </button>

@@ -42,17 +42,17 @@ export default async function AdminOverviewPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">סקירה כללית</h1>
+      <h1 className="text-2xl font-bold tracking-tight">סקירה כללית</h1>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-4">
         {tiles.map((tile) => (
           <Link key={tile.href} href={tile.href}>
-            <Card className="hover:bg-muted/50">
+            <Card className="transition-colors hover:border-primary/40 hover:bg-muted/40">
               <CardHeader>
-                <CardTitle className="text-sm text-muted-foreground">{tile.label}</CardTitle>
+                <CardTitle className="text-sm font-normal text-muted-foreground">{tile.label}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">{tile.value}</p>
+                <p className="font-data text-3xl font-semibold tracking-tight">{tile.value}</p>
               </CardContent>
             </Card>
           </Link>
@@ -69,14 +69,14 @@ export default async function AdminOverviewPage() {
           ) : (
             <ul className="flex flex-col gap-2 text-sm">
               {failedRuns.map((run, i) => (
-                <li key={i} className="flex justify-between border-b pb-2 last:border-0">
-                  <span>{run.job_name}</span>
+                <li key={i} className="flex justify-between border-b border-border pb-2 last:border-0">
+                  <span className="text-negative">{run.job_name}</span>
                   <span className="text-muted-foreground">{run.error_message}</span>
                 </li>
               ))}
             </ul>
           )}
-          <Link href="/admin/data-health" className="mt-3 inline-block text-sm underline">
+          <Link href="/admin/data-health" className="mt-3 inline-block text-sm text-primary hover:underline">
             צפה בכל ה-runs
           </Link>
         </CardContent>

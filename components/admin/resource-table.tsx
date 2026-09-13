@@ -91,12 +91,12 @@ export default function ResourceTable({
       {rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">אין שורות.</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-right text-muted-foreground">
+            <thead className="sticky top-0 bg-card">
+              <tr className="border-b border-border text-xs text-muted-foreground">
                 {columns.map((c) => (
-                  <th key={c.key} className="py-2 pe-4">
+                  <th key={c.key} className="whitespace-nowrap px-3 py-2.5 text-start font-medium">
                     {c.label}
                   </th>
                 ))}
@@ -107,9 +107,9 @@ export default function ResourceTable({
               {rows.map((row) => {
                 const rowId = String(row.id);
                 return (
-                  <tr key={rowId} className="border-b last:border-0">
+                  <tr key={rowId} className="border-b border-border last:border-0 hover:bg-muted/40">
                     {columns.map((c) => (
-                      <td key={c.key} className="py-2 pe-4">
+                      <td key={c.key} className="whitespace-nowrap px-3 py-2.5">
                         {c.editable ? (
                           <Input
                             className="h-8 w-28"
@@ -122,7 +122,7 @@ export default function ResourceTable({
                       </td>
                     ))}
                     {(allowUpdate || allowDelete) && (
-                      <td className="flex gap-2 py-2">
+                      <td className="flex gap-2 whitespace-nowrap px-3 py-2.5">
                         {allowUpdate && (
                           <Button
                             size="sm"

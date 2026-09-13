@@ -15,7 +15,7 @@ export default async function AdminResourcePage({ resource }: { resource: string
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">{config.label}</h1>
+      <h1 className="text-2xl font-bold tracking-tight">{config.label}</h1>
       <ResourceTable
         resource={resource}
         columns={config.columns}
