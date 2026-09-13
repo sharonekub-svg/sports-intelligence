@@ -36,7 +36,9 @@ supabase/migrations/   init_schema → rls → functions
 
 - **Batch 4**: Stripe מלא — `lib/stripe/client.ts`, `lib/stripe/webhookHandlers.ts` (event routing, נבדק ב-unit tests עם fake DB client: כל סוגי האירועים + מקרה קצה של subscription לא מקושר + שדות מקוננים אמיתיים שאומתו מול טיפוסי ה-SDK המותקן — `current_period_end` על ה-item לא על ה-subscription, `invoice.parent.subscription_details.subscription` לא `invoice.subscription`), `/api/stripe/{checkout,portal,webhook}` + `stripe_events` ledger אידמפוטנטי. עמוד `/account/billing` מחובר לכפתורי Checkout/Portal אמיתיים. **נבדק חי**: 401 ללא session, 400 על חתימת webhook חסרה/שגויה — ללא מפתחות Stripe אמיתיים (עדיין placeholder), כך שזרימת checkout מלאה לא נבדקה קצה-לקצה (דורש `docs/setup.md` שלב 2).
 
-עדיין TODO: Admin CRUD מלא, Analytics מחובר לספק חיצוני, Security hardening (rate limiting), QA מלא כ-Free/Pro/Admin.
+- **Batch 5**: Admin CRUD גנרי — `lib/admin/resources.ts` (רישום משאבים: matches/leagues/teams/predictions/models/backtests/data-sources/users/subscriptions/logs/data-health, כל אחד עם עמודות עריכה ו-Zod schema משלו) + `app/api/admin/[resource]/route.ts` (GET/POST/PATCH/DELETE גנרי, `requireAdmin()` עצמאי) + `components/admin/resource-table.tsx` (טבלה אינטראקטיבית גנרית אחת, לא 11 מסכים נפרדים). `/admin/backtests` כולל טריגר walk-forward אמיתי (`lib/jobs/runBacktest.ts` — מוגבל היום לכדורגל, ומתעד בפירוש שאין עדיין FDR אמיתי כי זו הרצה בודדת לא batch). `/admin` הראשי מציג ספירות אמיתיות + כשלי jobs אחרונים. **אומת חי**: משתמש בדיקה זמני נוצר דרך Supabase Admin API, קודם ל-role='admin', נבדקו השאילתות המדויקות של `requireAdmin()`/`isPro()` מול הנתונים האמיתיים (כולל אימות ה-trigger `handle_new_user` ומחיקת cascade), ואז נמחק לגמרי — לא נשאר עקבות. `pro_page_view` analytics מחובר לכל עמוד Pro.
+
+עדיין TODO (Batch 6): Security hardening (rate limiting), audit Zod מלא, QA ידני מלא כ-Free/Pro/Admin (דורש session דפדפן אמיתי — התשתית האוטומטית מוגבלת לבדיקת שאילתות ישירות מול ה-DB, לא cookie-session מלא).
 
 ## הרחבה לענף ספורט נוסף
 1. הוסף שורה ל-`sports` (מיגרציה חדשה) ול-league pool ב-`supabase/seed.sql`.
