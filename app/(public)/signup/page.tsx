@@ -61,6 +61,9 @@ export default function SignupPage() {
   if (confirmSent) {
     return (
       <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-16 text-center">
+        <Link href="/" className="mb-8 text-lg font-bold tracking-tight">
+          Sports Intelligence
+        </Link>
         <h1 className="text-xl font-bold">כמעט סיימת</h1>
         <p className="mt-2 text-muted-foreground">
           שלחנו אימייל אישור ל-{email}. לחץ על הקישור כדי להשלים את ההרשמה.
@@ -71,6 +74,9 @@ export default function SignupPage() {
 
   return (
     <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-16">
+      <Link href="/" className="mb-8 text-center text-lg font-bold tracking-tight">
+        Sports Intelligence
+      </Link>
       <Card>
         <CardHeader>
           <CardTitle>הרשמה</CardTitle>
@@ -116,7 +122,7 @@ export default function SignupPage() {
             </Button>
             <p className="text-sm text-muted-foreground">
               יש לך כבר חשבון?{" "}
-              <Link href="/login" className="underline">
+              <Link href="/login" className="text-primary hover:underline">
                 התחבר
               </Link>
             </p>

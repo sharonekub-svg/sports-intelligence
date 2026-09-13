@@ -14,7 +14,7 @@ export default async function AccountPage() {
 
   return (
     <div className="mx-auto max-w-lg">
-      <h1 className="text-2xl font-bold">החשבון שלי</h1>
+      <h1 className="text-2xl font-bold tracking-tight">החשבון שלי</h1>
 
       <Card className="mt-6">
         <CardHeader>
@@ -23,24 +23,20 @@ export default async function AccountPage() {
         <CardContent className="flex flex-col gap-3 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">אימייל</span>
-            <span>{user.email}</span>
+            <span className="font-data">{user.email}</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">סטטוס מנוי</span>
-            <Badge variant={pro ? "default" : "secondary"}>
+            <Badge
+              variant="outline"
+              className={pro ? "border-primary/30 bg-primary/10 text-primary" : ""}
+            >
               {pro ? "Pro" : "חינמי"}
             </Badge>
           </div>
-          {!pro && (
-            <Link href="/account/billing" className="mt-2 text-sm underline">
-              שדרג ל-Pro
-            </Link>
-          )}
-          {pro && (
-            <Link href="/account/billing" className="mt-2 text-sm underline">
-              נהל את המנוי שלי
-            </Link>
-          )}
+          <Link href="/account/billing" className="mt-2 text-sm text-primary hover:underline">
+            {pro ? "נהל את המנוי שלי" : "שדרג ל-Pro"}
+          </Link>
         </CardContent>
       </Card>
 

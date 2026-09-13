@@ -35,7 +35,7 @@ export async function buildScannerQuery(client: ScannerQueryClient, filters: Sca
   let query = client
     .from("predictions")
     .select(
-      "id, match_id, market, outcome, p_model, p_market_novig, edge, opportunity_score, confidence_score, data_quality_score, generated_at, matches!inner(id, scheduled_at, league_id)"
+      "id, match_id, market, outcome, p_model, p_market_novig, edge, opportunity_score, confidence_score, data_quality_score, generated_at, matches!inner(id, scheduled_at, league_id, home_team:teams!matches_home_team_id_fkey(name_he), away_team:teams!matches_away_team_id_fkey(name_he), leagues(name_he))"
     )
     .eq("is_actionable", true)
     .order("opportunity_score", { ascending: false })

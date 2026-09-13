@@ -1,14 +1,18 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { TriangleAlert, Lock } from "lucide-react";
 import { getVerifiedUser } from "@/lib/auth/session";
 import { isPro } from "@/lib/auth/isPro";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { expectedCalibrationError } from "@/lib/prediction-engine/calibration/ece";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { serverTrack } from "@/lib/analytics/serverTrack";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { GapIndicator } from "@/components/data/gap-indicator";
+import { TermTooltip } from "@/components/data/term-tooltip";
+import { EmptyState } from "@/components/data/empty-state";
 
 interface PredictionRow {
   id: string;
@@ -113,15 +117,18 @@ export default async function MarketBlindSpotsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">נקודות עיוורות בשוק</h1>
+      <h1 className="text-2xl font-bold tracking-tight">Market Blind Spots</h1>
+      <p className="mt-1 text-sm text-muted-foreground">
+        ליגות שבהן השוק עוקב פחות מקרוב — פערים עקביים בין המודל למחיר, לפי ליגה.
+      </p>
 
       {!pro ? (
         <Card className="mt-6 border-dashed">
-          <CardHeader>
-            <CardTitle className="text-base">זמין למנויי Pro</CardTitle>
-          </CardHeader>
-          <CardContent className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">ביצועי המודל לפי ליגה.</p>
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Lock className="size-4" strokeWidth={1.75} />
+              <span>ביצועי המודל לפי ליגה זמינים למנויי Pro.</span>
+            </div>
             <Link href="/account/billing" className={cn(buttonVariants({ size: "sm" }))}>
               שדרג ל-Pro
             </Link>
@@ -137,41 +144,54 @@ export default async function MarketBlindSpotsPage() {
 function BlindSpotsTable({ rows }: { rows: LeagueAggregate[] }) {
   if (rows.length === 0) {
     return (
-      <p className="mt-6 text-sm text-muted-foreground">
-        אין עדיין מספיק נתונים לניתוח לפי ליגה.
-      </p>
+      <EmptyState
+        icon={TriangleAlert}
+        title="אין עדיין מספיק נתונים"
+        description="הניתוח לפי ליגה יופיע ברגע שיצטברו מספיק תחזיות פעילות."
+        className="mt-6"
+      />
     );
   }
 
   return (
-    <div className="mt-6 overflow-x-auto">
+    <div className="mt-6 overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b text-right text-muted-foreground">
-            <th className="py-2">ליגה</th>
-            <th>מספר משחקים</th>
-            <th>גודל מדגם (מיושב)</th>
-            <th>פער ממוצע</th>
-            <th>פער חציוני</th>
-            <th>ECE</th>
-            <th>טווח תאריכים</th>
+        <thead className="sticky top-0 bg-card">
+          <tr className="border-b border-border text-xs text-muted-foreground">
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">#</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">ליגה</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">משחקים</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">גודל מדגם מיושב</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">פער ממוצע</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">פער חציוני</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">
+              <TermTooltip term="calibration">ECE</TermTooltip>
+            </th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">טווח תאריכים</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => (
-            <tr key={r.leagueId} className="border-b last:border-0">
-              <td className="py-2">{r.leagueName}</td>
-              <td>{r.matchCount}</td>
-              <td>
+          {rows.map((r, i) => (
+            <tr key={r.leagueId} className="border-b border-border last:border-0 hover:bg-muted/40">
+              <td className="whitespace-nowrap px-3 py-2.5 font-data text-muted-foreground">{i + 1}</td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-medium">{r.leagueName}</td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data">{r.matchCount}</td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data">
                 {r.settledCount}
                 {r.settledCount < 15 && (
-                  <span className="text-muted-foreground"> (מדגם קטן)</span>
+                  <span className="ms-1.5 text-xs text-warning">מדגם קטן</span>
                 )}
               </td>
-              <td>{(r.meanEdge * 100).toFixed(1)}pp</td>
-              <td>{(r.medianEdge * 100).toFixed(1)}pp</td>
-              <td>{r.ece !== null ? r.ece.toFixed(3) : "—"}</td>
-              <td>
+              <td className="whitespace-nowrap px-3 py-2.5">
+                <GapIndicator value={r.meanEdge} />
+              </td>
+              <td className="whitespace-nowrap px-3 py-2.5">
+                <GapIndicator value={r.medianEdge} />
+              </td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data">
+                {r.ece !== null ? r.ece.toFixed(3) : "—"}
+              </td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data text-muted-foreground">
                 {r.dateFrom ? new Date(r.dateFrom).toLocaleDateString("he-IL") : "—"} –{" "}
                 {r.dateTo ? new Date(r.dateTo).toLocaleDateString("he-IL") : "—"}
               </td>

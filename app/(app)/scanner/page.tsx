@@ -10,7 +10,10 @@ export default async function ScannerPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">Universal Scanner</h1>
+      <h1 className="text-2xl font-bold tracking-tight">Scanner</h1>
+      <p className="mt-1 text-sm text-muted-foreground">
+        סריקת כל ההזדמנויות הפעילות לפי ספורט, טווח תאריכים ורף איכות.
+      </p>
       <ScannerClient pro={pro} />
     </div>
   );

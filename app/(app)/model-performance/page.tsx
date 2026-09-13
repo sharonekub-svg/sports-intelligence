@@ -1,14 +1,19 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Activity, FlaskConical, Lock } from "lucide-react";
 import { getVerifiedUser } from "@/lib/auth/session";
 import { isPro } from "@/lib/auth/isPro";
 import { getAdminClient } from "@/lib/supabase/admin";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { serverTrack } from "@/lib/analytics/serverTrack";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { MetricCard } from "@/components/data/metric-card";
+import { GapIndicator } from "@/components/data/gap-indicator";
+import { TermTooltip } from "@/components/data/term-tooltip";
+import { EmptyState } from "@/components/data/empty-state";
 
 interface ModelVersionRow {
   id: string;
@@ -75,37 +80,26 @@ export default async function ModelPerformancePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">ביצועי המודל</h1>
+      <h1 className="text-2xl font-bold tracking-tight">ביצועי המודל</h1>
+      <p className="mt-1 text-sm text-muted-foreground">
+        מדדי כיול ודיוק, מבוססים על תחזיות שהתיישבו בפועל — בנפרד לגמרי מהרצות Backtest.
+      </p>
 
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-base">דיוק כללי (חי)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {accuracy ? (
-            <p className="text-3xl font-bold">
-              {((accuracy.correct / accuracy.total) * 100).toFixed(1)}%
-              <span className="ms-2 text-sm font-normal text-muted-foreground">
-                ({accuracy.correct}/{accuracy.total} תחזיות שהתיישבו)
-              </span>
-            </p>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              אין עדיין תחזיות שהתיישבו — המודל טרם צבר תוצאות אמיתיות.
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      <div className="mt-6 max-w-xs">
+        <MetricCard
+          label="דיוק כללי (חי)"
+          value={accuracy ? `${((accuracy.correct / accuracy.total) * 100).toFixed(1)}%` : "—"}
+          hint={accuracy ? `${accuracy.correct}/${accuracy.total} תחזיות שהתיישבו` : "אין עדיין תחזיות שהתיישבו"}
+        />
+      </div>
 
       {!pro ? (
         <Card className="mt-6 border-dashed">
-          <CardHeader>
-            <CardTitle className="text-base">פירוק מלא זמין למנויי Pro</CardTitle>
-          </CardHeader>
-          <CardContent className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Brier Score, Log Loss, Calibration, פירוק לפי ליגה/מודל, ו-Backtests.
-            </p>
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 py-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Lock className="size-4" strokeWidth={1.75} />
+              <span>Brier Score, Log Loss, Calibration, פירוק לפי ליגה/מודל, ו-Backtests זמינים למנויי Pro.</span>
+            </div>
             <Link href="/account/billing" className={cn(buttonVariants({ size: "sm" }))}>
               שדרג ל-Pro
             </Link>
@@ -113,17 +107,21 @@ export default async function ModelPerformancePage() {
         </Card>
       ) : (
         <>
-          <section className="mt-8">
-            <h2 className="text-lg font-semibold">ביצועים חיים לפי גרסת מודל</h2>
-            <p className="text-sm text-muted-foreground">
-              מבוסס על תחזיות שהתיישבו בפועל — לא Backtest.
-            </p>
+          <section className="mt-10">
+            <div className="flex items-center gap-2">
+              <Activity className="size-4 text-primary" strokeWidth={1.75} />
+              <h2 className="text-lg font-semibold tracking-tight">ביצועים חיים לפי גרסת מודל</h2>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">מבוסס על תחזיות שהתיישבו בפועל — לא Backtest.</p>
             <ModelVersionsTable rows={await loadModelVersions()} />
           </section>
 
           <section className="mt-10">
-            <h2 className="text-lg font-semibold">Backtests</h2>
-            <p className="text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <FlaskConical className="size-4 text-primary" strokeWidth={1.75} />
+              <h2 className="text-lg font-semibold tracking-tight">Backtests</h2>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
               הרצות walk-forward על נתונים היסטוריים — מוצג בנפרד מהביצועים החיים למעלה, ולעולם לא ממוזג
               איתם למספר אחד.
             </p>
@@ -137,38 +135,58 @@ export default async function ModelPerformancePage() {
 
 function ModelVersionsTable({ rows }: { rows: ModelVersionRow[] }) {
   if (rows.length === 0) {
-    return <p className="mt-3 text-sm text-muted-foreground">אין עדיין גרסאות מודל רשומות.</p>;
+    return (
+      <EmptyState
+        icon={Activity}
+        title="אין עדיין גרסאות מודל רשומות"
+        description="גרסאות מודל יופיעו כאן לאחר ריצת ה-pipeline הראשונה."
+        className="mt-4"
+      />
+    );
   }
   return (
-    <div className="mt-3 overflow-x-auto">
+    <div className="mt-4 overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b text-right text-muted-foreground">
-            <th className="py-2">מודל</th>
-            <th>ספורט</th>
-            <th>סטטוס</th>
-            <th>Brier</th>
-            <th>Log Loss</th>
-            <th>ECE</th>
-            <th>גודל מדגם</th>
-            <th>עודכן</th>
+        <thead className="sticky top-0 bg-card">
+          <tr className="border-b border-border text-xs text-muted-foreground">
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">מודל</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">ספורט</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">סטטוס</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">
+              <TermTooltip term="brierScore">Brier</TermTooltip>
+            </th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">
+              <TermTooltip term="logLoss">Log Loss</TermTooltip>
+            </th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">
+              <TermTooltip term="calibration">ECE</TermTooltip>
+            </th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">גודל מדגם</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">עודכן</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((m) => (
-            <tr key={m.id} className="border-b last:border-0">
-              <td className="py-2">
+            <tr key={m.id} className="border-b border-border last:border-0 hover:bg-muted/40">
+              <td className="whitespace-nowrap px-3 py-2.5 font-medium">
                 {m.name} {m.version}
               </td>
-              <td>{m.sports?.name_he ?? "—"}</td>
-              <td>
-                <Badge variant={m.status === "active" ? "default" : "secondary"}>{m.status}</Badge>
+              <td className="whitespace-nowrap px-3 py-2.5 text-muted-foreground">{m.sports?.name_he ?? "—"}</td>
+              <td className="whitespace-nowrap px-3 py-2.5">
+                <Badge
+                  variant="outline"
+                  className={m.status === "active" ? "border-positive/30 bg-positive/10 text-positive" : ""}
+                >
+                  {m.status}
+                </Badge>
               </td>
-              <td>{m.brier_score?.toFixed(3) ?? "—"}</td>
-              <td>{m.log_loss?.toFixed(3) ?? "—"}</td>
-              <td>{m.ece?.toFixed(3) ?? "—"}</td>
-              <td>{m.sample_size ?? "—"}</td>
-              <td>{m.trained_at ? new Date(m.trained_at).toLocaleDateString("he-IL") : "—"}</td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data">{m.brier_score?.toFixed(3) ?? "—"}</td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data">{m.log_loss?.toFixed(3) ?? "—"}</td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data">{m.ece?.toFixed(3) ?? "—"}</td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data">{m.sample_size ?? "—"}</td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data text-muted-foreground">
+                {m.trained_at ? new Date(m.trained_at).toLocaleDateString("he-IL") : "—"}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -180,39 +198,49 @@ function ModelVersionsTable({ rows }: { rows: ModelVersionRow[] }) {
 function BacktestsTable({ rows }: { rows: BacktestRow[] }) {
   if (rows.length === 0) {
     return (
-      <p className="mt-3 text-sm text-muted-foreground">
-        אין עדיין הרצות Backtest — ניתן להריץ אחת מ-Admin לאחר צבירת היסטוריה מספקת.
-      </p>
+      <EmptyState
+        icon={FlaskConical}
+        title="אין עדיין הרצות Backtest"
+        description="ניתן להריץ הרצה חדשה מ-Admin לאחר צבירת היסטוריה מספקת."
+        className="mt-4"
+      />
     );
   }
   return (
-    <div className="mt-3 overflow-x-auto">
+    <div className="mt-4 overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b text-right text-muted-foreground">
-            <th className="py-2">ליגה</th>
-            <th>טווח</th>
-            <th>גודל מדגם</th>
-            <th>Brier</th>
-            <th>פער ממוצע</th>
-            <th>p-value (FDR)</th>
-            <th>מובהק?</th>
+        <thead className="sticky top-0 bg-card">
+          <tr className="border-b border-border text-xs text-muted-foreground">
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">ליגה</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">טווח</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">גודל מדגם</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">
+              <TermTooltip term="brierScore">Brier</TermTooltip>
+            </th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">פער ממוצע</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">p-value (FDR)</th>
+            <th className="whitespace-nowrap px-3 py-2.5 text-start font-medium">מובהק?</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((b) => (
-            <tr key={b.id} className="border-b last:border-0">
-              <td className="py-2">{b.leagues?.name_he ?? "כל הליגות"}</td>
-              <td>
+            <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/40">
+              <td className="whitespace-nowrap px-3 py-2.5 font-medium">{b.leagues?.name_he ?? "כל הליגות"}</td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data text-muted-foreground">
                 {new Date(b.window_start).toLocaleDateString("he-IL")} –{" "}
                 {new Date(b.window_end).toLocaleDateString("he-IL")}
               </td>
-              <td>{b.sample_size}</td>
-              <td>{b.brier_score?.toFixed(3) ?? "—"}</td>
-              <td>{b.mean_edge !== null ? `${(b.mean_edge * 100).toFixed(1)}pp` : "—"}</td>
-              <td>{b.fdr_adjusted_p_value?.toFixed(4) ?? "—"}</td>
-              <td>
-                <Badge variant={b.is_significant ? "default" : "secondary"}>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data">{b.sample_size}</td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data">{b.brier_score?.toFixed(3) ?? "—"}</td>
+              <td className="whitespace-nowrap px-3 py-2.5">
+                {b.mean_edge !== null ? <GapIndicator value={b.mean_edge} /> : "—"}
+              </td>
+              <td className="whitespace-nowrap px-3 py-2.5 font-data">{b.fdr_adjusted_p_value?.toFixed(4) ?? "—"}</td>
+              <td className="whitespace-nowrap px-3 py-2.5">
+                <Badge
+                  variant="outline"
+                  className={b.is_significant ? "border-positive/30 bg-positive/10 text-positive" : "text-muted-foreground"}
+                >
                   {b.is_significant ? "כן" : "לא"}
                 </Badge>
               </td>

@@ -52,6 +52,9 @@ function LoginForm() {
 
   return (
     <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-16">
+      <Link href="/" className="mb-8 text-center text-lg font-bold tracking-tight">
+        Sports Intelligence
+      </Link>
       <Card>
         <CardHeader>
           <CardTitle>התחברות</CardTitle>
@@ -85,10 +88,10 @@ function LoginForm() {
               {loading ? "מתחבר..." : "התחבר"}
             </Button>
             <div className="flex justify-between text-sm text-muted-foreground">
-              <Link href="/forgot-password" className="hover:underline">
+              <Link href="/forgot-password" className="text-primary hover:underline">
                 שכחת סיסמה?
               </Link>
-              <Link href="/signup" className="hover:underline">
+              <Link href="/signup" className="text-primary hover:underline">
                 אין לך חשבון? הרשמה
               </Link>
             </div>

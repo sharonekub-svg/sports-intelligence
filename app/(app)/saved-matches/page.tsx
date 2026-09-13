@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Bookmark } from "lucide-react";
 import { getVerifiedUser } from "@/lib/auth/session";
 import { isPro } from "@/lib/auth/isPro";
 import { getServerClient } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
+import { EmptyState } from "@/components/data/empty-state";
 import UnsaveButton from "./unsave-button";
 
 const FREE_LIMIT = 3;
@@ -34,12 +36,12 @@ export default async function SavedMatchesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">משחקים שמורים</h1>
+      <h1 className="text-2xl font-bold tracking-tight">משחקים שמורים</h1>
 
       {!pro && rows.length > FREE_LIMIT && (
         <p className="mt-2 text-sm text-muted-foreground">
           מוצגים {FREE_LIMIT} מתוך {rows.length} —{" "}
-          <Link href="/account/billing" className="underline">
+          <Link href="/account/billing" className="text-primary hover:underline">
             שדרג ל-Pro
           </Link>{" "}
           לצפייה בכולם.
@@ -47,17 +49,23 @@ export default async function SavedMatchesPage() {
       )}
 
       {visibleRows.length === 0 ? (
-        <p className="mt-6 text-sm text-muted-foreground">עדיין לא שמרת משחקים.</p>
+        <EmptyState
+          icon={Bookmark}
+          title="עדיין לא שמרת משחקים"
+          description="שמור משחקים מה-Scanner או מדף המשחק כדי לעקוב אחריהם כאן."
+          action={{ label: "פתח את ה-Scanner", href: "/scanner" }}
+          className="mt-6"
+        />
       ) : (
         <div className="mt-6 flex flex-col gap-3">
           {visibleRows.map((row) => (
             <Card key={row.match_id}>
               <CardContent className="flex items-center justify-between py-4">
                 <div>
-                  <Link href={`/match/${row.match_id}`} className="font-medium underline">
+                  <Link href={`/match/${row.match_id}`} className="font-medium text-primary hover:underline">
                     {row.matches?.leagues?.name_he ?? "משחק"}
                   </Link>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="font-data text-sm text-muted-foreground">
                     {row.matches ? new Date(row.matches.scheduled_at).toLocaleString("he-IL") : "—"}
                   </p>
                 </div>
