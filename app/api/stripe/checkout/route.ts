@@ -4,10 +4,16 @@ import { getStripeClient } from "@/lib/stripe/client";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { serverTrack } from "@/lib/analytics/serverTrack";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function POST() {
   const user = await getVerifiedUser();
   if (!user) return NextResponse.json({ error: "התחברות נדרשת" }, { status: 401 });
+
+  const rateLimit = checkRateLimit(`checkout:${user.id}`, 5, 60_000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "יותר מדי בקשות, נסה שוב בעוד רגע" }, { status: 429 });
+  }
 
   const priceId = process.env.STRIPE_PRICE_ID_PRO;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";

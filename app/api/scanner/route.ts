@@ -5,15 +5,22 @@ import { scannerFilterSchema } from "@/lib/validation/scanner.schema";
 import { buildScannerQuery } from "@/lib/api/scannerQuery";
 import { serverTrack } from "@/lib/analytics/serverTrack";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function GET(request: NextRequest) {
+  let userId: string;
   try {
-    await requirePro();
+    userId = await requirePro();
   } catch (error) {
     if (error instanceof AuthError) {
       return NextResponse.json({ error: error.message }, { status: error.status });
     }
     throw error;
+  }
+
+  const rateLimit = checkRateLimit(`scanner:${userId}`, 30, 60_000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "יותר מדי בקשות, נסה שוב בעוד רגע" }, { status: 429 });
   }
 
   const { searchParams } = new URL(request.url);

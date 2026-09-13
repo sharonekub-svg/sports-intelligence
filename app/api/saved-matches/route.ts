@@ -4,6 +4,7 @@ import { getVerifiedUserId } from "@/lib/auth/session";
 import { savedMatchInputSchema } from "@/lib/validation/savedMatches.schema";
 import { serverTrack } from "@/lib/analytics/serverTrack";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 // Uses the RLS-respecting server client (not the admin client) — this IS
 // a genuinely user-owned table with real self-row RLS policies, so
@@ -13,6 +14,11 @@ import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 export async function POST(request: NextRequest) {
   const userId = await getVerifiedUserId();
   if (!userId) return NextResponse.json({ error: "התחברות נדרשת" }, { status: 401 });
+
+  const rateLimit = checkRateLimit(`save-match:${userId}`, 60, 60_000);
+  if (!rateLimit.allowed) {
+    return NextResponse.json({ error: "יותר מדי בקשות, נסה שוב בעוד רגע" }, { status: 429 });
+  }
 
   const body = await request.json().catch(() => null);
   const parsed = savedMatchInputSchema.safeParse(body);

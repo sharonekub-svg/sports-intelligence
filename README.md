@@ -6,7 +6,7 @@
 
 ## מצב הפרויקט
 
-בבנייה. ראה `docs/architecture.md` למה שכבר קיים ומה עדיין TODO. הריפו הזה נפרד לגמרי מפרויקט `hapogea` (Winner odds site) — אין ביניהם שיתוף קוד או נתונים.
+הקוד מוכן ל-production מבחינה פונקציונלית: Auth, DB+RLS, Prediction Engine (183 unit tests), Data Providers, Background Jobs (מאומתים חיים מול הפרויקט האמיתי), Scanner/Hidden Opportunities/Market Blind Spots/Model Performance/Saved Matches, Stripe (Checkout/Portal/Webhook), Admin CRUD, Rate Limiting. **מה שנשאר לפני שהוא "חי" בפועל**: חשבונות Stripe/Odds API/Vercel אמיתיים (ראו `docs/setup.md`) ומעבר QA ידני בדפדפן אמיתי כ-Free/Pro/Admin. ראו `docs/architecture.md` לפירוט מלא לפי Batch. הריפו הזה נפרד לגמרי מפרויקט `hapogea` (Winner odds site) — אין ביניהם שיתוף קוד או נתונים.
 
 ## Stack
 

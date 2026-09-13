@@ -1,8 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { AuthError } from "@/lib/auth/requirePro";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { getResourceConfig } from "@/lib/admin/resources";
+
+const uuidSchema = z.string().uuid();
 
 /**
  * Generic CRUD endpoint for every /admin/<resource> page. Gated by
@@ -80,10 +83,11 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ r
   }
 
   const body = await request.json().catch(() => null);
-  const id = body?.id;
-  if (!id || typeof id !== "string") {
-    return NextResponse.json({ error: "חסר מזהה" }, { status: 400 });
+  const idResult = uuidSchema.safeParse(body?.id);
+  if (!idResult.success) {
+    return NextResponse.json({ error: "מזהה לא תקין" }, { status: 400 });
   }
+  const id = idResult.data;
 
   const parsed = config.updateSchema.safeParse(body?.fields ?? {});
   if (!parsed.success) {
@@ -113,8 +117,9 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
   }
 
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-  if (!id) return NextResponse.json({ error: "חסר מזהה" }, { status: 400 });
+  const idResult = uuidSchema.safeParse(searchParams.get("id"));
+  if (!idResult.success) return NextResponse.json({ error: "מזהה לא תקין" }, { status: 400 });
+  const id = idResult.data;
 
   const admin = getAdminClient();
   const { error } = await admin.from(config.table).delete().eq("id", id);
