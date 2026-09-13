@@ -34,7 +34,11 @@ export function GoogleAuthButton({ next }: { next?: string }) {
       options: { redirectTo },
     });
     if (oauthError) {
-      setError("החיבור עם Google לא זמין כרגע");
+      setError(
+        /provider is not enabled|unsupported provider/i.test(oauthError.message)
+          ? "כניסה עם Google לא הופעלה עדיין ב-Supabase (Authentication → Sign In / Providers → Google)"
+          : `כניסה עם Google נכשלה: ${oauthError.message}`
+      );
       setLoading(false);
     }
   }

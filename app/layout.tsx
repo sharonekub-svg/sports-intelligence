@@ -33,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
       className={`${plexSansHebrew.variable} ${plexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="bg-grain min-h-full flex flex-col bg-background text-foreground">
         <TooltipProvider delay={200}>{children}</TooltipProvider>
         <Toaster />
       </body>

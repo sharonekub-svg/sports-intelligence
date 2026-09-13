@@ -25,7 +25,11 @@ export function SkipButton({ next = "/opportunities" }: { next?: string }) {
     const { error: anonError } = await supabase.auth.signInAnonymously();
     setLoading(false);
     if (anonError) {
-      setError("כניסה מהירה לא זמינה כרגע");
+      setError(
+        anonError.status === 422 || /anonymous/i.test(anonError.message)
+          ? "כניסת אורח מכובה בהגדרות המערכת (יש להפעיל \"Allow anonymous sign-ins\" ב-Supabase)"
+          : `כניסה מהירה נכשלה: ${anonError.message}`
+      );
       return;
     }
     router.push(next);

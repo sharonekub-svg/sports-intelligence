@@ -75,7 +75,7 @@ const EXAMPLE_LOCKED: MatchCardData = {
 export default function Home() {
   return (
     <div>
-      <section className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:py-24 lg:grid-cols-2 lg:items-center lg:gap-16">
+      <section className="mx-auto grid max-w-6xl items-center gap-14 px-4 py-14 sm:py-20 lg:grid-cols-[1.1fr_1fr] lg:gap-10 lg:py-24">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl">
             לא רק לראות את המשחק.
@@ -99,21 +99,30 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="relative">
-          <p className="mb-2 text-center text-xs text-muted-foreground">נתוני הדגמה</p>
-          <MatchCard match={EXAMPLE_MATCHES[0]} />
+        <div className="relative mx-auto w-full max-w-sm">
+          <div className="absolute -inset-x-3 top-6 -z-10 rounded-lg border border-border/60 bg-card/40 opacity-70" style={{ height: "calc(100% - 1.5rem)" }} />
+          <div className="rounded-lg border border-border bg-card p-1 shadow-2xl shadow-black/40">
+            <div className="flex items-center justify-between px-3 pb-2 pt-1.5">
+              <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">נתוני הדגמה</span>
+              <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <span className="size-1.5 rounded-full bg-positive" />
+                לוח משחקים חי
+              </span>
+            </div>
+            <MatchCard match={EXAMPLE_MATCHES[0]} />
+          </div>
         </div>
       </section>
 
       <section id="how-it-works" className="border-t border-border bg-card/40 py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4">
           <h2 className="text-2xl font-bold tracking-tight">איך זה עובד</h2>
-          <div className="mt-10 grid gap-10 sm:grid-cols-3">
+          <div className="mt-10 grid gap-6 sm:grid-cols-3">
             {HOW_IT_WORKS.map((item) => (
-              <div key={item.step}>
-                <span className="font-data text-sm text-primary">{item.step}</span>
-                <h3 className="mt-2 font-semibold">{item.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{item.body}</p>
+              <div key={item.step} className="border-t-2 border-primary/40 pt-4">
+                <span className="font-data text-2xl font-semibold text-primary">{item.step}</span>
+                <h3 className="mt-3 font-semibold">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
               </div>
             ))}
           </div>
