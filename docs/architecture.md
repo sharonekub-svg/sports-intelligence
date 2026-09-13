@@ -34,7 +34,9 @@ supabase/migrations/   init_schema → rls → functions
 
 פישוטים מתועדים ב-v1 (לא באגים סמויים): התאמת קבוצות ב-`ingestMatches`/`teamResolution.ts` היא exact-match לא-רגיש-לרישיות (לא ה-fuzzy matching המלא של hapogea); `fuzzyMatch.ts` הוא גרסה מפושטת ל-3 גורמים (במקום 5 של hapogea); Elo מחושב מחדש בכל הרצת `generatePredictions` (לא persisted incrementally); יעילות נטו בכדורסל היא proxy מבוסס נקודות-למשחק (אין עדיין נתוני pace/possessions); "הזדמנויות נסתרות" מדורגות לפי Opportunity Score בלבד (אין עדיין איתות "תשומת לב ציבורית" אמיתי).
 
-עדיין TODO (Batches הבאים): Stripe (Checkout/webhook/portal), Pro-gating מלא (כבר קיים חלקית — `isPro`/`requirePro` פעילים), Admin CRUD מלא, Analytics מחובר לספק חיצוני, Security hardening (rate limiting), בדיקות RLS מקיפות, QA.
+- **Batch 4**: Stripe מלא — `lib/stripe/client.ts`, `lib/stripe/webhookHandlers.ts` (event routing, נבדק ב-unit tests עם fake DB client: כל סוגי האירועים + מקרה קצה של subscription לא מקושר + שדות מקוננים אמיתיים שאומתו מול טיפוסי ה-SDK המותקן — `current_period_end` על ה-item לא על ה-subscription, `invoice.parent.subscription_details.subscription` לא `invoice.subscription`), `/api/stripe/{checkout,portal,webhook}` + `stripe_events` ledger אידמפוטנטי. עמוד `/account/billing` מחובר לכפתורי Checkout/Portal אמיתיים. **נבדק חי**: 401 ללא session, 400 על חתימת webhook חסרה/שגויה — ללא מפתחות Stripe אמיתיים (עדיין placeholder), כך שזרימת checkout מלאה לא נבדקה קצה-לקצה (דורש `docs/setup.md` שלב 2).
+
+עדיין TODO: Admin CRUD מלא, Analytics מחובר לספק חיצוני, Security hardening (rate limiting), QA מלא כ-Free/Pro/Admin.
 
 ## הרחבה לענף ספורט נוסף
 1. הוסף שורה ל-`sports` (מיגרציה חדשה) ול-league pool ב-`supabase/seed.sql`.

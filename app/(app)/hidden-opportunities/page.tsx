@@ -6,6 +6,8 @@ import { getAdminClient } from "@/lib/supabase/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { serverTrack } from "@/lib/analytics/serverTrack";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 interface OpportunityRow {
   id: string;
@@ -45,6 +47,7 @@ export default async function HiddenOpportunitiesPage() {
   const user = await getVerifiedUser();
   if (!user) redirect("/login");
   const pro = await isPro(user.id);
+  if (pro) await serverTrack(ANALYTICS_EVENTS.PRO_PAGE_VIEW, { page: "hidden-opportunities" });
 
   return (
     <div>

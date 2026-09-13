@@ -7,6 +7,8 @@ import { expectedCalibrationError } from "@/lib/prediction-engine/calibration/ec
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { serverTrack } from "@/lib/analytics/serverTrack";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 interface PredictionRow {
   id: string;
@@ -107,6 +109,7 @@ export default async function MarketBlindSpotsPage() {
   const user = await getVerifiedUser();
   if (!user) redirect("/login");
   const pro = await isPro(user.id);
+  if (pro) await serverTrack(ANALYTICS_EVENTS.PRO_PAGE_VIEW, { page: "market-blind-spots" });
 
   return (
     <div>

@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { serverTrack } from "@/lib/analytics/serverTrack";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 interface ModelVersionRow {
   id: string;
@@ -67,6 +69,7 @@ export default async function ModelPerformancePage() {
   const user = await getVerifiedUser();
   if (!user) redirect("/login");
   const pro = await isPro(user.id);
+  if (pro) await serverTrack(ANALYTICS_EVENTS.PRO_PAGE_VIEW, { page: "model-performance" });
 
   const accuracy = await loadOverallAccuracy();
 
