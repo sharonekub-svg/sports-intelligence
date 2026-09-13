@@ -26,12 +26,15 @@ supabase/migrations/   init_schema → rls → functions
 - **`subscriptions`, `stripe_events`, `predictions`, `backtests`** — RLS מופעל וללא policy כלל ללקוח (חסימה מוחלטת חוץ מ-service-role). ראו `supabase/migrations/20260101000100_rls.sql`.
 - **`lib/supabase/admin.ts`** מסומן `server-only` — ניסיון import מקומפוננטת client הוא שגיאת build.
 
-## מצב נוכחי (אחרי Batch 2)
+## מצב נוכחי (אחרי Batch 3)
 בוצע:
-- **Batch 1**: Architecture, Design System (Tailwind/shadcn RTL), Database (schema+RLS+triggers), Auth (login/signup/forgot-password/reset-password/account, session gating דרך proxy.ts). מיושם ונבדק חי מול פרויקט Supabase אמיתי.
-- **Batch 2**: Data Providers (`lib/providers/`: The Odds API + free scores provider מבוסס 365scores, עם retry+cache+fallback chain — נבדק מול תגובה חיה אמיתית), Prediction Engine מלא (`lib/prediction-engine/`: de-vig Shin/power/proportional, Poisson/Dixon-Coles, Elo, כיווץ בייסיאני, אנסמבל, כיול Brier/LogLoss/ECE/Platt/Beta, Wilson CI, Opportunity/Confidence Score, backtest harness עם purge/embargo ו-FDR) — **139 unit tests עוברים**, `lib/prediction-engine/index.ts` הוא ה-facade היחיד שקורא ל-DB (דרך repos מוזרקים, טרם מחובר). עמוד `/match/[id]` בנוי מול הסכימה האמיתית (Free/Pro gating עובד, `predictions_public` vs `predictions` מלא). `pnpm verify:engine` מריץ את המנוע המלא קצה-לקצה (fixture או Odds API חי) ומדפיס תוצאות הגיוניות.
+- **Batch 1**: Architecture, Design System (Tailwind/shadcn RTL), Database (schema+RLS+triggers), Auth. מיושם ונבדק חי מול פרויקט Supabase אמיתי.
+- **Batch 2**: Data Providers + Prediction Engine מלא (`lib/prediction-engine/`) — 139 unit tests. `/match/[id]` בנוי מול הסכימה האמיתית. `pnpm verify:engine` מריץ את המנוע קצה-לקצה.
+- **Batch 3**: חיבור מלא ל-jobs אמיתיים (`lib/jobs/`: ingestMatches, refreshOdds, refreshScores, generatePredictions, updateResults, recomputeModelPerformance, dataHealthCheck) + `lib/jobs/jobRunner.ts` (רישום ל-`ingestion_runs`/`system_logs`) + `lib/jobs/cronAuth.ts` (fail-closed, בודק `CRON_SECRET`) + 7 route handlers תחת `app/api/cron/*` + `vercel.json`. **כל 7 ה-cron routes נבדקו חי** מול הפרויקט האמיתי עם `CRON_SECRET` אמיתי — כולם מחזירים JSON תקין (401 בלי הרשאה, 200/500 עם), ו-`data-health-check` אכן עדכן את `data_sources` (the_odds_api→down כי אין מפתח, free_scores_provider→healthy עם תגובה אמיתית). Scanner (`/api/scanner` + `lib/api/scannerQuery.ts` — לוגיקת בניית השאילתה מופרדת ונבדקת ב-unit tests גנריים עם fake client, לא רק ידנית), Hidden Opportunities, Market Blind Spots (אגרגציה בקוד היישום לפי ליגה — ECE/Brier/פער חציוני/ממוצע), Model Performance (מפריד בבירור בין ביצועים חיים ל-Backtests — לעולם לא ממוזג), Saved Matches (RLS-scoped client, לא admin — self-row policy אמיתי אוכף). **164 unit/integration tests עוברים.**
 
-עדיין TODO (Batches הבאים): חיבור מנוע הניבוי ל-cron jobs אמיתיים (`lib/jobs/*`, Batch 3), Scanner, Hidden Opportunities, Market Blind Spots, Model Performance, Stripe, Admin CRUD מלא, Analytics מחובר לספק חיצוני.
+פישוטים מתועדים ב-v1 (לא באגים סמויים): התאמת קבוצות ב-`ingestMatches`/`teamResolution.ts` היא exact-match לא-רגיש-לרישיות (לא ה-fuzzy matching המלא של hapogea); `fuzzyMatch.ts` הוא גרסה מפושטת ל-3 גורמים (במקום 5 של hapogea); Elo מחושב מחדש בכל הרצת `generatePredictions` (לא persisted incrementally); יעילות נטו בכדורסל היא proxy מבוסס נקודות-למשחק (אין עדיין נתוני pace/possessions); "הזדמנויות נסתרות" מדורגות לפי Opportunity Score בלבד (אין עדיין איתות "תשומת לב ציבורית" אמיתי).
+
+עדיין TODO (Batches הבאים): Stripe (Checkout/webhook/portal), Pro-gating מלא (כבר קיים חלקית — `isPro`/`requirePro` פעילים), Admin CRUD מלא, Analytics מחובר לספק חיצוני, Security hardening (rate limiting), בדיקות RLS מקיפות, QA.
 
 ## הרחבה לענף ספורט נוסף
 1. הוסף שורה ל-`sports` (מיגרציה חדשה) ול-league pool ב-`supabase/seed.sql`.

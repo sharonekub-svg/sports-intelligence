@@ -6,6 +6,9 @@ import { getVerifiedUser } from "@/lib/auth/session";
 import { isPro } from "@/lib/auth/isPro";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import SaveButton from "./save-button";
+import { serverTrack } from "@/lib/analytics/serverTrack";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 interface MatchRow {
   id: string;
@@ -97,6 +100,7 @@ export default async function MatchPage({ params }: PageProps<"/match/[id]">) {
   if (!data || !data.homeTeam || !data.awayTeam) notFound();
 
   const { match, homeTeam, awayTeam, league, publicPredictions } = data;
+  await serverTrack(ANALYTICS_EVENTS.MATCH_VIEW, { matchId: id });
 
   const user = await getVerifiedUser();
   const pro = user ? await isPro(user.id) : false;
@@ -137,6 +141,11 @@ export default async function MatchPage({ params }: PageProps<"/match/[id]">) {
             )}
             <span>{awayTeam.name_he}</span>
           </div>
+          {user && (
+            <div className="flex justify-center">
+              <SaveButton matchId={match.id} />
+            </div>
+          )}
         </CardContent>
       </Card>
 
