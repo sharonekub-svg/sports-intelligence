@@ -8,7 +8,7 @@ import { getServerClient } from "@/lib/supabase/server";
 // Only ever redirect to a same-site relative path — "/foo", never
 // "//evil.com" (protocol-relative) or an absolute URL to another host.
 export function safeNextPath(raw: string | null): string {
-  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/dashboard";
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/opportunities";
   return raw;
 }
 

@@ -102,7 +102,7 @@ export default function AppShell({ userEmail, isPro, children }: AppShellProps) 
       {/* Desktop sidebar */}
       <aside className="hidden w-60 shrink-0 flex-col border-e border-sidebar-border bg-sidebar lg:flex">
         <div className="px-4 py-5">
-          <Link href="/dashboard" className="text-sm font-semibold tracking-tight text-sidebar-foreground">
+          <Link href="/opportunities" className="text-sm font-semibold tracking-tight text-sidebar-foreground">
             Sports Intelligence
           </Link>
         </div>
@@ -114,7 +114,7 @@ export default function AppShell({ userEmail, isPro, children }: AppShellProps) 
 
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-sidebar-border bg-sidebar px-4 lg:hidden">
-        <Link href="/dashboard" className="text-sm font-semibold text-sidebar-foreground">
+        <Link href="/opportunities" className="text-sm font-semibold text-sidebar-foreground">
           Sports Intelligence
         </Link>
         <button

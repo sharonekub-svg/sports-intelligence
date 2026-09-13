@@ -7,18 +7,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: [
-        "/dashboard",
-        "/scanner",
-        "/match",
-        "/hidden-opportunities",
-        "/market-blind-spots",
-        "/model-performance",
-        "/saved-matches",
-        "/account",
-        "/admin",
-        "/api",
-      ],
+      disallow: ["/opportunities", "/match", "/account", "/admin", "/api"],
     },
     sitemap: `${base}/sitemap.xml`,
   };

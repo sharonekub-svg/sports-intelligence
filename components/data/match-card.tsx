@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Lock } from "lucide-react";
 import { GapIndicator } from "./gap-indicator";
 import { ConfidenceIndicator } from "./confidence-indicator";
 import { DataQualityIndicator } from "./data-quality-indicator";
@@ -24,12 +25,9 @@ export interface MatchCardData {
  * first, teams and league are context. Hover: subtle elevation + border
  * highlight, no bounce/scale theatrics.
  */
-export function MatchCard({ match }: { match: MatchCardData }) {
-  return (
-    <Link
-      href={`/match/${match.matchId}`}
-      className="group block rounded-lg border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-black/20"
-    >
+export function MatchCard({ match, locked = false }: { match: MatchCardData; locked?: boolean }) {
+  const body = (
+    <>
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span>{match.leagueName}</span>
         <span>
@@ -73,6 +71,30 @@ export function MatchCard({ match }: { match: MatchCardData }) {
         <ConfidenceIndicator score={match.confidence} />
         <DataQualityIndicator score={match.dataQuality} />
       </div>
+    </>
+  );
+
+  if (locked) {
+    return (
+      <Link
+        href="/account/billing"
+        className="group relative block overflow-hidden rounded-lg border border-dashed border-border bg-card p-4 transition-all hover:border-primary/40"
+      >
+        <div className="pointer-events-none select-none opacity-50 blur-[3px]">{body}</div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-card/50 text-center">
+          <Lock className="size-5 text-primary" strokeWidth={1.75} />
+          <span className="text-xs font-medium text-foreground">שדרג ל-Pro לצפייה</span>
+        </div>
+      </Link>
+    );
+  }
+
+  return (
+    <Link
+      href={`/match/${match.matchId}`}
+      className="group block rounded-lg border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-black/20"
+    >
+      {body}
     </Link>
   );
 }

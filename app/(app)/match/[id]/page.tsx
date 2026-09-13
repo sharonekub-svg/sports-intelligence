@@ -15,7 +15,6 @@ import { GapIndicator } from "@/components/data/gap-indicator";
 import { ConfidenceIndicator } from "@/components/data/confidence-indicator";
 import { DataQualityIndicator } from "@/components/data/data-quality-indicator";
 import { OpportunityScore } from "@/components/data/opportunity-score";
-import SaveButton from "./save-button";
 import { serverTrack } from "@/lib/analytics/serverTrack";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
@@ -172,11 +171,6 @@ export default async function MatchPage({ params }: PageProps<"/match/[id]">) {
             )}
             <span>{awayTeam.name_he}</span>
           </div>
-          {user && (
-            <div className="flex justify-center">
-              <SaveButton matchId={match.id} />
-            </div>
-          )}
         </CardContent>
       </Card>
 

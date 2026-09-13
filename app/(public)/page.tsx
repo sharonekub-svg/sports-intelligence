@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GitCompare, Target, Radar, Check, Minus } from "lucide-react";
+import { GitCompare, Target, Flame, Check, Minus } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -17,9 +17,9 @@ const FEATURES = [
     body: "דירוג משחקים לפי איכות הפער — לא רק גודלו — עם התחשבות באי-ודאות, גודל מדגם, וכיול המודל.",
   },
   {
-    icon: Radar,
-    title: "סריקה רחבה",
-    body: "כדורגל וכדורסל, מהליגות הגדולות ועד ליגות פחות מוכרות, עם ציון Data Quality שקוף לכל משחק.",
+    icon: Flame,
+    title: "לוח משחקים יומי",
+    body: "20 המשחקים עם הפער האיכותי ביותר מכל העולם, כדורגל וכדורסל, מדורגים ומחולקים לקטגוריות.",
   },
 ];
 
@@ -42,13 +42,10 @@ const HOW_IT_WORKS = [
 ];
 
 const COMPARISON_ROWS: { label: string; free: boolean; pro: boolean }[] = [
-  { label: "תחזיות בסיסיות", free: true, pro: true },
-  { label: "משחקים שמורים (עד 3)", free: true, pro: true },
-  { label: "Universal Scanner עם סינון מלא", free: false, pro: true },
-  { label: "הזדמנויות נסתרות", free: false, pro: true },
-  { label: "Market Blind Spots", free: false, pro: true },
-  { label: "Model vs Market מלא + Confidence + Data Quality", free: false, pro: true },
-  { label: "ביצועי מודל מלאים ו-Backtests", free: false, pro: true },
+  { label: "5 ההזדמנויות המובילות", free: true, pro: true },
+  { label: "סינון לפי קטגוריה (כדורגל / כדורסל)", free: true, pro: true },
+  { label: "20 ההזדמנויות המובילות", free: false, pro: true },
+  { label: "Model vs Market מלא לכל משחק + Confidence + Data Quality", free: false, pro: true },
 ];
 
 const EXAMPLE_MATCH: MatchCardData = {

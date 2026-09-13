@@ -15,12 +15,9 @@ interface SubscriptionRow {
 }
 
 const PRO_FEATURES = [
-  "Scanner מלא עם כל המסננים",
-  "הזדמנויות נסתרות",
-  "Market Blind Spots",
-  "Model vs Market מלא — Confidence ו-Data Quality",
-  "ביצועי מודל מלאים ו-Backtests",
-  "משחקים שמורים ללא הגבלה",
+  "כל 20 ההזדמנויות המובילות בלוח המשחקים (במקום 5)",
+  "Model vs Market מלא לכל משחק — Confidence ו-Data Quality",
+  "עדיפות בעדכוני המודל",
 ];
 
 export default async function BillingPage() {

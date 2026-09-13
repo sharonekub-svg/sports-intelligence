@@ -1,17 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-const PROTECTED_PREFIXES = [
-  "/dashboard",
-  "/scanner",
-  "/match",
-  "/hidden-opportunities",
-  "/market-blind-spots",
-  "/model-performance",
-  "/saved-matches",
-  "/account",
-  "/admin",
-];
+const PROTECTED_PREFIXES = ["/opportunities", "/match", "/account", "/admin"];
 
 /**
  * Coarse gate only: refreshes the Supabase session and redirects

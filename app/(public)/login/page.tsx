@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { track } from "@/lib/analytics/track";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 
 export default function LoginPage() {
   return (
@@ -46,7 +47,7 @@ function LoginForm() {
     }
 
     track(ANALYTICS_EVENTS.LOGIN);
-    router.push(searchParams.get("next") ?? "/dashboard");
+    router.push(searchParams.get("next") ?? "/opportunities");
     router.refresh();
   }
 
@@ -60,6 +61,14 @@ function LoginForm() {
           <CardTitle>התחברות</CardTitle>
         </CardHeader>
         <CardContent>
+          <GoogleAuthButton next={searchParams.get("next") ?? "/opportunities"} />
+
+          <div className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            או עם אימייל
+            <span className="h-px flex-1 bg-border" />
+          </div>
+
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">אימייל</Label>
