@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import Link from "next/link";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,9 +33,6 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-16 text-center">
-        <Link href="/" className="mb-8 text-lg font-bold tracking-tight">
-          Sports Intelligence
-        </Link>
         <h1 className="text-xl font-bold">בדוק את תיבת הדואר</h1>
         <p className="mt-2 text-muted-foreground">
           אם קיים חשבון עם כתובת זו, נשלח אליה קישור לאיפוס סיסמה.
@@ -46,10 +42,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-16">
-      <Link href="/" className="mb-8 text-center text-lg font-bold tracking-tight">
-        Sports Intelligence
-      </Link>
+    <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-12 sm:py-16">
       <Card>
         <CardHeader>
           <CardTitle>שחזור סיסמה</CardTitle>

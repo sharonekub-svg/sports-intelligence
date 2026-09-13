@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { track } from "@/lib/analytics/track";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+import { SkipButton } from "@/components/auth/skip-button";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -62,9 +63,6 @@ export default function SignupPage() {
   if (confirmSent) {
     return (
       <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-16 text-center">
-        <Link href="/" className="mb-8 text-lg font-bold tracking-tight">
-          Sports Intelligence
-        </Link>
         <h1 className="text-xl font-bold">כמעט סיימת</h1>
         <p className="mt-2 text-muted-foreground">
           שלחנו אימייל אישור ל-{email}. לחץ על הקישור כדי להשלים את ההרשמה.
@@ -74,10 +72,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-16">
-      <Link href="/" className="mb-8 text-center text-lg font-bold tracking-tight">
-        Sports Intelligence
-      </Link>
+    <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-12 sm:py-16">
       <Card>
         <CardHeader>
           <CardTitle>הרשמה</CardTitle>
@@ -96,7 +91,6 @@ export default function SignupPage() {
               <Label htmlFor="displayName">שם</Label>
               <Input
                 id="displayName"
-                required
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 autoComplete="name"
@@ -138,6 +132,9 @@ export default function SignupPage() {
           </form>
         </CardContent>
       </Card>
+      <div className="mt-6 flex justify-center">
+        <SkipButton next="/opportunities" />
+      </div>
     </div>
   );
 }

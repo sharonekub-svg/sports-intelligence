@@ -1,33 +1,14 @@
 import Link from "next/link";
-import { GitCompare, Target, Flame, Check, Minus } from "lucide-react";
+import { Check, Minus } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { MatchCard, type MatchCardData } from "@/components/data/match-card";
-
-const FEATURES = [
-  {
-    icon: GitCompare,
-    title: "Model vs Market",
-    body: "השוואה שקופה בין הסתברות מודל סטטיסטי (Elo, Poisson-Dixon/Coles, מודל מרווח) להסתברות המשתמעת מנתוני שוק, אחרי הסרת מרווח הבית.",
-  },
-  {
-    icon: Target,
-    title: "Opportunity Score",
-    body: "דירוג משחקים לפי איכות הפער — לא רק גודלו — עם התחשבות באי-ודאות, גודל מדגם, וכיול המודל.",
-  },
-  {
-    icon: Flame,
-    title: "לוח משחקים יומי",
-    body: "20 המשחקים עם הפער האיכותי ביותר מכל העולם, כדורגל וכדורסל, מדורגים ומחולקים לקטגוריות.",
-  },
-];
 
 const HOW_IT_WORKS = [
   {
     step: "01",
     title: "המודל מחשב הסתברות",
-    body: "עוצמת קבוצה, פורם עדכני, דירוג Elo ויתרון בית — מעובדים למודל סטטיסטי שקוף לכל משחק.",
+    body: "עוצמת קבוצה, פורם עדכני, דירוג Elo ויתרון בית — מעובדים למודל סטטיסטי שקוף לכל משחק, כדורגל וכדורסל.",
   },
   {
     step: "02",
@@ -36,8 +17,8 @@ const HOW_IT_WORKS = [
   },
   {
     step: "03",
-    title: "מדרגים לפי איכות הפער",
-    body: "Opportunity Score משלב את גודל הפער עם Confidence ו-Data Quality — לא מציג פער גדול כהזדמנות אוטומטית.",
+    title: "מדרגים ומרכיבים לוח משחקים",
+    body: "20 המשחקים עם הפער האיכותי ביותר, מכל העולם, מקובצים לקטגוריות ומדורגים לפי Opportunity Score.",
   },
 ];
 
@@ -48,18 +29,47 @@ const COMPARISON_ROWS: { label: string; free: boolean; pro: boolean }[] = [
   { label: "Model vs Market מלא לכל משחק + Confidence + Data Quality", free: false, pro: true },
 ];
 
-const EXAMPLE_MATCH: MatchCardData = {
-  matchId: "example",
-  leagueName: "לדוגמה — פרמייר ליג",
-  scheduledAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-  homeTeamName: "קבוצה א",
-  awayTeamName: "קבוצה ב",
-  pModel: 0.68,
-  pMarket: 0.54,
-  gap: 0.14,
-  confidence: 0.82,
-  dataQuality: 91,
-  opportunityScore: 1.87,
+const EXAMPLE_MATCHES: MatchCardData[] = [
+  {
+    matchId: "example-1",
+    leagueName: "לדוגמה — פרמייר ליג",
+    scheduledAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+    homeTeamName: "קבוצה א",
+    awayTeamName: "קבוצה ב",
+    pModel: 0.68,
+    pMarket: 0.54,
+    gap: 0.14,
+    confidence: 0.82,
+    dataQuality: 91,
+    opportunityScore: 1.87,
+  },
+  {
+    matchId: "example-2",
+    leagueName: "לדוגמה — Euroleague",
+    scheduledAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+    homeTeamName: "קבוצה ג",
+    awayTeamName: "קבוצה ד",
+    pModel: 0.57,
+    pMarket: 0.49,
+    gap: 0.08,
+    confidence: 0.71,
+    dataQuality: 84,
+    opportunityScore: 1.21,
+  },
+];
+
+const EXAMPLE_LOCKED: MatchCardData = {
+  matchId: "example-3",
+  leagueName: "לדוגמה — La Liga",
+  scheduledAt: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
+  homeTeamName: "קבוצה ה",
+  awayTeamName: "קבוצה ו",
+  pModel: 0.61,
+  pMarket: 0.52,
+  gap: 0.09,
+  confidence: 0.68,
+  dataQuality: 79,
+  opportunityScore: 1.05,
 };
 
 export default function Home() {
@@ -73,8 +83,8 @@ export default function Home() {
             להבין את הנתונים שמאחוריו.
           </h1>
           <p className="mt-5 max-w-md text-lg text-muted-foreground text-pretty">
-            פלטפורמת Sports Intelligence שמנתחת הסתברויות, ביצועי מודל, נתוני
-            ליגות ופערים בין תחזית לשוק.
+            כל יום, 20 המשחקים עם הפער האיכותי ביותר בין המודל לשוק — מכל העולם,
+            כדורגל וכדורסל — מדורגים בלוח משחקים אחד.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/signup" className={cn(buttonVariants({ size: "lg" }))}>
@@ -91,14 +101,14 @@ export default function Home() {
 
         <div className="relative">
           <p className="mb-2 text-center text-xs text-muted-foreground">נתוני הדגמה</p>
-          <MatchCard match={EXAMPLE_MATCH} />
+          <MatchCard match={EXAMPLE_MATCHES[0]} />
         </div>
       </section>
 
       <section id="how-it-works" className="border-t border-border bg-card/40 py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4">
-          <h2 className="text-center text-2xl font-bold tracking-tight">איך זה עובד</h2>
-          <div className="mt-10 grid gap-8 sm:grid-cols-3">
+          <h2 className="text-2xl font-bold tracking-tight">איך זה עובד</h2>
+          <div className="mt-10 grid gap-10 sm:grid-cols-3">
             {HOW_IT_WORKS.map((item) => (
               <div key={item.step}>
                 <span className="font-data text-sm text-primary">{item.step}</span>
@@ -111,32 +121,36 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-5xl px-4 py-16 sm:py-20">
-        <div className="grid gap-4 sm:grid-cols-3">
-          {FEATURES.map((feature) => (
-            <Card key={feature.title}>
-              <CardHeader>
-                <feature.icon className="size-5 text-primary" strokeWidth={1.75} />
-                <CardTitle className="mt-2 text-base">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">{feature.body}</CardContent>
-            </Card>
+        <h2 className="text-2xl font-bold tracking-tight">לוח המשחקים שלך</h2>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground">
+          5 מתוך ה-20 ההזדמנויות המובילות פתוחות בחינם. השאר נעולות עד שדרוג ל-Pro — בלי לנחש מה מסתתר מאחורי הנעילה.
+        </p>
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {EXAMPLE_MATCHES.map((match) => (
+            <MatchCard key={match.matchId} match={match} />
           ))}
+          <MatchCard match={EXAMPLE_LOCKED} locked />
         </div>
       </section>
 
-      <section className="border-t border-border py-16 sm:py-20">
+      <section className="border-t border-border bg-card/40 py-16 sm:py-20">
         <div className="mx-auto max-w-2xl px-4">
           <h2 className="text-center text-2xl font-bold tracking-tight">חינם או Pro</h2>
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            פתח את שכבת המידע המלאה כשתהיה מוכן.
+            תוכנית אחת, ללא הגבלות מבלבלות.
           </p>
-          <div className="mt-8 overflow-hidden rounded-lg border border-border">
+          <div className="mt-8 overflow-hidden rounded-lg border border-border bg-background">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border bg-card">
+                <tr className="border-b border-border">
                   <th className="p-3 text-start font-normal text-muted-foreground"></th>
                   <th className="p-3 font-medium">חינם</th>
-                  <th className="p-3 font-medium text-primary">Pro</th>
+                  <th className="rounded-t-lg bg-primary/10 p-3 font-medium text-primary">
+                    Pro
+                    <span className="mt-1 block text-[10px] font-normal uppercase tracking-wide text-primary/70">
+                      מומלץ
+                    </span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -150,7 +164,7 @@ export default function Home() {
                         <Minus className="mx-auto size-4 text-muted-foreground/40" strokeWidth={2} />
                       )}
                     </td>
-                    <td className="p-3 text-center">
+                    <td className="bg-primary/5 p-3 text-center">
                       {row.pro ? (
                         <Check className="mx-auto size-4 text-positive" strokeWidth={2} />
                       ) : (

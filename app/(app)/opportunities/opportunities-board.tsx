@@ -63,7 +63,7 @@ export function OpportunitiesBoard({
         <button
           onClick={() => setSelected("all")}
           className={cn(
-            "rounded-md border px-3 py-1.5 text-sm transition-colors",
+            "rounded-md border px-3 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
             selected === "all"
               ? "border-primary/40 bg-primary/10 text-primary"
               : "border-border text-muted-foreground hover:bg-muted/50"
@@ -76,7 +76,7 @@ export function OpportunitiesBoard({
             key={cat.key}
             onClick={() => setSelected(cat.key)}
             className={cn(
-              "rounded-md border px-3 py-1.5 text-sm transition-colors",
+              "rounded-md border px-3 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
               selected === cat.key
                 ? "border-primary/40 bg-primary/10 text-primary"
                 : "border-border text-muted-foreground hover:bg-muted/50"

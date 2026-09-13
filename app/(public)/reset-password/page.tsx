@@ -2,7 +2,6 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,10 +34,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-16">
-      <Link href="/" className="mb-8 text-center text-lg font-bold tracking-tight">
-        Sports Intelligence
-      </Link>
+    <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-12 sm:py-16">
       <Card>
         <CardHeader>
           <CardTitle>בחר סיסמה חדשה</CardTitle>

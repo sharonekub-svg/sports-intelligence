@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { track } from "@/lib/analytics/track";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+import { SkipButton } from "@/components/auth/skip-button";
 
 export default function LoginPage() {
   return (
@@ -52,10 +53,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-16">
-      <Link href="/" className="mb-8 text-center text-lg font-bold tracking-tight">
-        Sports Intelligence
-      </Link>
+    <div className="mx-auto flex max-w-sm flex-col justify-center px-4 py-12 sm:py-16">
       <Card>
         <CardHeader>
           <CardTitle>התחברות</CardTitle>
@@ -107,6 +105,9 @@ function LoginForm() {
           </form>
         </CardContent>
       </Card>
+      <div className="mt-6 flex justify-center">
+        <SkipButton next={searchParams.get("next") ?? "/opportunities"} />
+      </div>
     </div>
   );
 }
