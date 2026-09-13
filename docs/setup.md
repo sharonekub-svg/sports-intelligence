@@ -55,7 +55,7 @@
 2. הוסף את כל משתני הסביבה מ-`.env.example` בהגדרות הפרויקט.
 3. `vercel.json` (כבר בריפו) מגדיר את לוחות הזמנים של ה-cron — הם יופעלו אוטומטית עם הפריסה.
 4. צור ערך אקראי ל-`CRON_SECRET` והגדר אותו כמשתנה סביבה ב-Vercel — Vercel Cron שולח אוטומטית `Authorization: Bearer <CRON_SECRET>` בכל הפעלה מתוזמנת ברגע שהערך מוגדר, וזה בדיוק מה שכל route תחת `app/api/cron/*` בודק (ראה `lib/jobs/cronAuth.ts`).
-5. **הערה על תוכנית Vercel**: לוחות הזמנים ב-`vercel.json` (כל 10-15 דקות עבור חלק מה-jobs) דורשים תוכנית **Pro** ומעלה. בתוכנית **Hobby** חינמית, Vercel מגביל Cron Jobs להפעלה **אחת ביום** לכל job — אם זו התוכנית שלך, צמצם את `vercel.json` בהתאם (או הרץ jobs תדירים יותר ידנית/דרך שירות חיצוני עד לשדרוג).
+5. **הערה על תוכנית Vercel**: `vercel.json` מוגדר כרגע להפעלה **פעם ביום** לכל job (מדורג במהלך הלילה: 03:00→03:20 ingest/odds/scores, 04:00→04:10 predictions/results, 05:00→05:10 model-performance/health) — זה מה שתוכנית **Hobby** החינמית תומכת בה. **נתקלנו בזה בפועל בפריסה הראשונה** (Vercel דחה את ה-deploy עם השגיאה "Hobby accounts are limited to daily cron jobs" עד שהתאמנו את הלו"ז). אם תשדרג לתוכנית **Pro**, ניתן להחזיר תדירות גבוהה יותר (למשל `refresh-odds` כל 15 דקות) — הגרסה הקודמת שמורה ב-git history.
 
 ## 5. אופציונלי
 
